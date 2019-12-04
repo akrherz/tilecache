@@ -6,19 +6,13 @@ import datetime
 class TileCacheException(Exception):
     """Exception"""
 
-    pass
-
 
 class TileCacheLayerNotFoundException(Exception):
     """Exception"""
 
-    pass
-
 
 class TileCacheFutureException(Exception):
     """Exception"""
-
-    pass
 
 
 class Capabilities(object):
@@ -53,6 +47,11 @@ class Request(object):
             layer.name = layername
             layer.layers = ltype
             layer.url = "%s%s" % (layer.metadata["baseurl"], uri)
+        elif layername.startswith("goes_"):
+            (_bogus, bird, sector, channel) = layername.split("_")
+            layer = copy.copy(self.service.layers["goes_%s" % (bird,)])
+            layer.name = layername
+            layer.layers = "%s_%s" % (sector, channel)
         elif layername.startswith("goes::"):
             (bird, channel, tstring) = (layername.split("::")[1]).split("-")
             if len(tstring) == 12:
