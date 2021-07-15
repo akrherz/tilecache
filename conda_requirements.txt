@@ -2,3 +2,4 @@ paste
 six
 pytest
 pytest-cov
+pytest-runner
