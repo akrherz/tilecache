@@ -1,2 +1,4 @@
 paste
 six
+pytest
+pytest-cov
