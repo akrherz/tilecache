@@ -1,0 +1,26 @@
+name: Install and Test
+on: [push]
+jobs:
+  build-linux:
+    name: Python (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.6", "3.8", "3.9"]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Add /etc/hosts entries
+      run: |
+        cat .github/workflows/etchosts.txt | sudo tee -a /etc/hosts
+
+    - name: Setup CI from ci-tooling
+      run: |
+        git clone --depth 1 https://github.com/akrherz/ci_tooling.git .ci_tooling
+        . .ci_tooling/miniconda.sh
+        pip install codecov
+        python -m pip install . --upgrade
+        coverage run --source=src setup.py test
+        if [[ ${{ matrix.python-version }} == "3.8" ]]; then
+          codecov;
+        fi
