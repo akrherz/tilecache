@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.6", "3.8", "3.9"]
+        python-version: ["3.7", "3.8", "3.9"]
     steps:
     - uses: actions/checkout@v2
 
@@ -18,6 +18,7 @@ jobs:
       run: |
         git clone --depth 1 https://github.com/akrherz/ci_tooling.git .ci_tooling
         . .ci_tooling/miniconda.sh
+        . .ci_tooling/memcached.sh
         pip install codecov
         python -m pip install . --upgrade
         coverage run --source=src setup.py test

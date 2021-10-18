@@ -4,7 +4,7 @@ BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors
 import time
 
 from six import string_types
-import memcache
+from pymemcache.client.hash import HashClient
 from TileCache.Cache import Cache
 
 
@@ -16,7 +16,7 @@ class Memcached(Cache):
         Cache.__init__(self, **kwargs)
         if isinstance(servers, string_types):
             servers = [s.strip() for s in servers.split(",")]
-        self.cache = memcache.Client(servers, debug=0)
+        self.cache = HashClient(servers)
         self.timeout = int(kwargs.get("timeout", 0))
 
     def getKey(self, tile):
