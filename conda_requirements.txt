@@ -1,6 +1,6 @@
 paste
 six
-pymemcache
+python-memcached
 pytest
 pytest-cov
 pytest-runner
