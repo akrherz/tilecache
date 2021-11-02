@@ -9,6 +9,7 @@ import configparser
 from six import string_types
 from paste.request import parse_formvars
 from TileCache.base import (
+    MalformedRequestException,
     TileCacheException,
     TileCacheLayerNotFoundException,
     TileCacheFutureException,
@@ -124,7 +125,7 @@ class Service(object):
 
     def generate_crossdomain_xml(self):
         """Helper method for generating the XML content for a crossdomain.xml
-           file, to be used to allow remote sites to access this content."""
+        file, to be used to allow remote sites to access this content."""
         xml = [
             """<?xml version="1.0"?>
 <!DOCTYPE cross-domain-policy SYSTEM
@@ -223,7 +224,7 @@ class Service(object):
 
 
 def wsgiHandler(environ, start_response, service):
-    """ This is the WSGI handler """
+    """This is the WSGI handler"""
 
     host = ""
     path_info = environ.get("PATH_INFO", "")
@@ -259,9 +260,19 @@ def wsgiHandler(environ, start_response, service):
         if service.cache.sendfile and fmt.startswith("image/"):
             return []
         return [image]
+    except MalformedRequestException as exp:
+        sys.stderr.write(
+            f"[client: {environ.get('REMOTE_ADDR')}] Path: {path_info} "
+            f"Err: {exp} Referrer: {environ.get('HTTP_REFERER')} REDIRECT\n"
+        )
+        # Hacky way to get us back in the front door with a 404
+        start_response(
+            "301 Moved Permanently", [("Location", f"/redirected{path_info}")]
+        )
+        return [b""]
     except TileCacheException as exp:
-        status = "404 Tile Not Found"
-        msg = "An error occurred: %s" % (str(exp),)
+        status = "404 File Not Found"
+        msg = f"An error occurred: {exp}"
     except TileCacheLayerNotFoundException as exp:
         status = "500 Internal Server Error"
         msg = "%s" % (str(exp),)
@@ -273,27 +284,11 @@ def wsgiHandler(environ, start_response, service):
         E = str(exp)
         # Swallow this error
         if E.find("Corrupt, empty or missing file") == -1:
+            emsg = E.replace("\n", " ")
             sys.stderr.write(
-                ("[client: %s] Path: %s Err: %s Referrer: %s\n")
-                % (
-                    environ.get("REMOTE_ADDR"),
-                    path_info,
-                    E.replace("\n", " "),
-                    environ.get("HTTP_REFERER"),
-                )
+                f"[client: {environ.get('REMOTE_ADDR')}] Path: {path_info} "
+                f"Err: {emsg} Referrer: {environ.get('HTTP_REFERER')}\n"
             )
-        # nice code, but we are getting invalid requests into the near future
-        # which error out.
-        # else:
-        #    missfn = ""
-        #    f = re.search("/mesonet/ARCHIVE/data/(?P<a>[a-zA-Z0-9/\._\-]+)&",
-        #                  E)
-        #    if f:
-        #        missfn = f.groupdict()['a']
-        #    sys.stderr.write(("[client: %s] Path: %s errored with "
-        #                      "missing file %s Referrer: %s\n"
-        #                      ) % (environ.get("REMOTE_ADDR"), path_info,
-        #                           missfn, environ.get("HTTP_REFERER")))
         msg = "An error occurred: %s\n" % (exp,)
 
     start_response(status, [("Content-Type", "text/plain")])
