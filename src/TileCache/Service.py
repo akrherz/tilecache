@@ -267,7 +267,17 @@ def wsgiHandler(environ, start_response, service):
         )
         # Hacky way to get us back in the front door with a 404
         start_response(
-            "301 Moved Permanently", [("Location", f"/redirected{path_info}")]
+            "301 Moved Permanently",
+            [
+                (
+                    "Location",
+                    (
+                        f"{environ.get('REQUEST_SCHEME', 'https')}://"
+                        f"{environ.get('SERVER_NAME', 'localhost')}"
+                        f"/redirected{path_info}"
+                    ),
+                )
+            ],
         )
         return [b""]
     except TileCacheException as exp:
