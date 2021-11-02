@@ -1,6 +1,11 @@
 # BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors
 
-from TileCache.base import Request, Capabilities, TileCacheException
+from TileCache.base import (
+    Capabilities,
+    MalformedRequestException,
+    Request,
+    TileCacheException,
+)
 import TileCache.Layer as Layer
 
 
@@ -25,7 +30,11 @@ class TMS(Request):
             parts[-1] = parts[-1].split(".")[0]
             tile = None
             if layer.tms_type == "google" or fields.get("type") == "google":
-                res = layer.resolutions[int(parts[2])]
+                try:
+                    res = layer.resolutions[int(parts[2])]
+                except ValueError as exp:  # Likely garbage sent
+                    msg = f"Invalid zoom level {parts[2]}."
+                    raise MalformedRequestException(msg) from exp
                 maxY = (
                     int(
                         round(

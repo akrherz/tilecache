@@ -3,6 +3,10 @@ import copy
 import datetime
 
 
+class MalformedRequestException(Exception):
+    """Exception raised when a request is malformed"""
+
+
 class TileCacheException(Exception):
     """Exception"""
 
