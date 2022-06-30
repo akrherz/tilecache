@@ -194,7 +194,7 @@ class Layer(object):
         [-12.0, 17.0, 22.0, 36.0]
         >>> l.debug
         False
-        
+
         >>> l = Layer("name", spherical_mercator="yes")
         >>> round(l.resolutions[0])
         156543.0
@@ -205,12 +205,16 @@ class Layer(object):
         self.layers = layers or name
         self.paletted = False
 
-        self.spherical_mercator = spherical_mercator and spherical_mercator.lower() in [
-            "yes",
-            "y",
-            "t",
-            "true",
-        ]
+        self.spherical_mercator = (
+            spherical_mercator
+            and spherical_mercator.lower()
+            in [
+                "yes",
+                "y",
+                "t",
+                "true",
+            ]
+        )
         if self.spherical_mercator:
             bbox = "-20037508.34,-20037508.34,20037508.34,20037508.34"
             maxresolution = "156543.0339"
@@ -267,7 +271,7 @@ class Layer(object):
                     maxRes = float(height) / (size[1] * aspect)
             else:
                 maxRes = float(maxresolution)
-            self.resolutions = [maxRes / 2 ** i for i in range(int(levels))]
+            self.resolutions = [maxRes / 2**i for i in range(int(levels))]
 
         self.watermarkimage = watermarkimage
 
