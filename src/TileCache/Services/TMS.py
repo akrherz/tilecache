@@ -31,7 +31,8 @@ class TMS(Request):
             tile = None
             if layer.tms_type == "google" or fields.get("type") == "google":
                 try:
-                    res = layer.resolutions[int(parts[2])]
+                    # TODO unsure what should be done about fractional res
+                    res = layer.resolutions[int(float(parts[2]))]
                 except ValueError as exp:  # Likely garbage sent
                     msg = f"Invalid zoom level {parts[2]}."
                     raise MalformedRequestException(msg) from exp
