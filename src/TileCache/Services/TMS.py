@@ -19,40 +19,37 @@ class TMS(Request):
             host = host + "/"
         if len(parts) < 1:
             return self.serverCapabilities(host)
-        elif len(parts) < 2:
+        if len(parts) < 2:
             return self.serviceCapabilities(host, self.service.layers)
-        else:
-            layer = self.getLayer(parts[1])
-            if len(parts) < 3:
-                return self.layerCapabilities(host, layer)
-            if parts[2] == "{z}":
-                raise TileCacheException("{z} was provided instead of value.")
-            parts[-1] = parts[-1].split(".")[0]
-            tile = None
-            if layer.tms_type == "google" or fields.get("type") == "google":
-                try:
-                    # TODO unsure what should be done about fractional res
-                    res = layer.resolutions[int(float(parts[2]))]
-                except ValueError as exp:  # Likely garbage sent
-                    msg = f"Invalid zoom level {parts[2]}."
-                    raise MalformedRequestException(msg) from exp
-                maxY = (
-                    int(
-                        round(
-                            (layer.bbox[3] - layer.bbox[1])
-                            / (res * layer.size[1])
-                        )
+        layer = self.getLayer(parts[1])
+        if len(parts) < 3:
+            return self.layerCapabilities(host, layer)
+        if parts[2] == "{z}":
+            raise TileCacheException("{z} was provided instead of value.")
+        parts[-1] = parts[-1].split(".")[0]
+        tile = None
+        if layer.tms_type == "google" or fields.get("type") == "google":
+            try:
+                # TODO unsure what should be done about fractional res
+                zoom = int(float(parts[2]))
+                res = layer.resolutions[zoom]
+            except ValueError as exp:  # Likely garbage sent
+                msg = f"Invalid zoom level {parts[2]}."
+                raise MalformedRequestException(msg) from exp
+            maxY = (
+                int(
+                    round(
+                        (layer.bbox[3] - layer.bbox[1]) / (res * layer.size[1])
                     )
-                    - 1
                 )
-                tile = Layer.Tile(
-                    layer, int(parts[3]), maxY - int(parts[4]), int(parts[2])
-                )
-            else:
-                tile = Layer.Tile(
-                    layer, int(parts[3]), int(parts[4]), int(parts[2])
-                )
-            return tile
+                - 1
+            )
+            tile = Layer.Tile(layer, int(parts[3]), maxY - int(parts[4]), zoom)
+        else:
+            tile = Layer.Tile(
+                layer, int(parts[3]), int(parts[4]), int(parts[2])
+            )
+        return tile
 
     def serverCapabilities(self, host):
         return Capabilities(
