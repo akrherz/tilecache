@@ -3,10 +3,10 @@ BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors
 """
 import time
 
-from six import string_types
-
 # Important to use a thread-safe pool as mod_wsgi is running this in threads
 from pymemcache.client.hash import HashClient
+from six import string_types
+
 from TileCache.Cache import Cache
 
 

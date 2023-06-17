@@ -1,12 +1,12 @@
 # BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors
 
+import TileCache.Layer as Layer
 from TileCache.base import (
     Capabilities,
     MalformedRequestException,
     Request,
     TileCacheException,
 )
-import TileCache.Layer as Layer
 
 
 class TMS(Request):

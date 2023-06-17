@@ -1,8 +1,10 @@
 """BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors"""
 from __future__ import print_function
+
 import sys
 
 from six import string_types
+
 from TileCache.base import TileCacheException
 
 DEBUG = False
@@ -133,12 +135,17 @@ class Layer(object):
     config_properties = [
         {
             "name": "spherical_mercator",
-            "description": "Layer is in spherical mercator. (Overrides bbox, maxresolution, SRS, Units)",
+            "description": (
+                "Layer is in spherical mercator. "
+                "(Overrides bbox, maxresolution, SRS, Units)"
+            ),
             "type": "boolean",
         },
         {
             "name": "layers",
-            "description": "Comma seperated list of layers associated with this layer.",
+            "description": (
+                "Comma seperated list of layers associated with this layer."
+            ),
         },
         {
             "name": "extension",
@@ -157,7 +164,9 @@ class Layer(object):
         },
         {
             "name": "data_extent",
-            "description": "Bounding box of the layer data. (Same SRS as the layer grid.)",
+            "description": (
+                "Bounding box of the layer data. (Same SRS as the layer grid.)"
+            ),
             "default": "",
             "type": "map",
         },
@@ -477,12 +486,18 @@ class MetaLayer(Layer):
         },
         {
             "name": "metaSize",
-            "description": "Comma seperated-pair of numbers, defininig the tiles included in a single size",
+            "description": (
+                "Comma seperated-pair of numbers, "
+                "defininig the tiles included in a single size"
+            ),
             "default": "5,5",
         },
         {
             "name": "metaBuffer",
-            "description": "Number of pixels outside the metatile to include in the render request.",
+            "description": (
+                "Number of pixels outside the metatile "
+                "to include in the render request."
+            ),
         },
     ]
 

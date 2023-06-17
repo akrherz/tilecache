@@ -1,24 +1,25 @@
 """BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors"""
 from __future__ import print_function
+
+import configparser
+import email
+import os
 import sys
 import time
-import os
-import email
-import configparser
 
-from six import string_types
 from paste.request import parse_formvars
+from six import string_types
+
+import TileCache.Cache as Cache
+import TileCache.Layer as Layer
 from TileCache.base import (
     MalformedRequestException,
     TileCacheException,
-    TileCacheLayerNotFoundException,
     TileCacheFutureException,
+    TileCacheLayerNotFoundException,
 )
-import TileCache.Cache as Cache
-import TileCache.Layer as Layer
 from TileCache.Services.TMS import TMS
 from TileCache.Services.WMS import WMS
-
 
 cfgfiles = (
     "/etc/tilecache.cfg",
