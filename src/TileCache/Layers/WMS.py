@@ -1,7 +1,7 @@
 # BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors
 
-from TileCache.Layer import MetaLayer
 import TileCache.Client as WMSClient
+from TileCache.Layer import MetaLayer
 
 
 class WMS(MetaLayer):

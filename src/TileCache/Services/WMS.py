@@ -1,7 +1,6 @@
 """BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors"""
 
-from TileCache.base import Request, Capabilities
-import TileCache.Layer as Layer
+from TileCache.base import Capabilities, Request
 
 
 class WMS(Request):
@@ -31,7 +30,7 @@ class WMS(Request):
             if not tile:
                 raise Exception(
                     "couldn't calculate tile index for layer %s from (%s)"
-                    % (layer.name, bbox)
+                    % (name, bbox)
                 )
             tiles.append(tile)
 
@@ -88,7 +87,9 @@ class WMS(Request):
                 <Format>application/vnd.ogc.wms_xml</Format>
                 <DCPType>
                   <HTTP>
-                    <Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="%s"/></Get>
+                    <Get><OnlineResource
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="%s"/></Get>
                   </HTTP>
                 </DCPType>
               </GetCapabilities>""" % (
@@ -105,7 +106,9 @@ class WMS(Request):
         xml += """
                 <DCPType>
                   <HTTP>
-                    <Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="%s"/></Get>
+                    <Get><OnlineResource
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="%s"/></Get>
                   </HTTP>
                 </DCPType>
               </GetMap>
