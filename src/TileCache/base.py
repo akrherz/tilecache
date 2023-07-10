@@ -56,6 +56,21 @@ class Request(object):
             layer = copy.copy(self.service.layers["goes_%s" % (bird,)])
             layer.name = layername
             layer.layers = "%s_%s" % (sector, channel)
+        elif layername.startswith("mrms::"):
+            # mrms::a2m-202307101700
+            (prod, tstring) = (layername.split("::")[1]).split("-")
+            if len(tstring) == 12:
+                mylayername = "mrms-t"
+                uri = (
+                    f"year={tstring[:4]}&month={tstring[4:6]}"
+                    f"&day={tstring[6:8]}&time={tstring[8:12]}&"
+                )
+            else:
+                mylayername = "mrms"
+                uri = ""
+            layer = copy.copy(self.service.layers[mylayername])
+            layer.name = layername
+            layer.url = f"{layer.metadata['baseurl']}prod={prod.lower()}&{uri}"
         elif layername.startswith("goes::"):
             (bird, channel, tstring) = (layername.split("::")[1]).split("-")
             if len(tstring) == 12:
