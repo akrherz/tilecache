@@ -1,0 +1,8 @@
+dependencies:
+ - codecov
+ - paste
+ - six
+ - pymemcache
+ - pytest
+ - pytest-cov
+ - pytest-runner
