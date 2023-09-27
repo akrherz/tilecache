@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 # BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors
-from __future__ import print_function
 
 try:
     from urllib.parse import urlencode
