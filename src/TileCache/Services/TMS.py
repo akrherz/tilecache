@@ -102,7 +102,7 @@ class TMS(Request):
               <SRS>%s</SRS>
               <BoundingBox minx="%.6f" miny="%.6f" maxx="%.6f" maxy="%.6f" />
               <Origin x="%.6f" y="%.6f" />  
-              <TileFormat width="%d" height="%d" mime-type="%s" extension="%s" />
+            <TileFormat width="%d" height="%d" mime-type="%s" extension="%s" />
               <TileSets>
             """ % (
             host,
