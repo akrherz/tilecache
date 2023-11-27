@@ -192,7 +192,7 @@ class Layer(object):
         extent_type="strict",
         units="degrees",
         tms_type="",
-        **kwargs
+        **kwargs,
     ):
         """Take in parameters, usually from a config file, and create a Layer.
 
@@ -328,7 +328,10 @@ class Layer(object):
                 break
         if z is None:
             raise TileCacheException(
-                "can't find resolution index for %f. Available resolutions are: \n%s"
+                (
+                    "can't find resolution index for %f. "
+                    "Available resolutions are: \n%s"
+                )
                 % (res, self.resolutions)
             )
         return z

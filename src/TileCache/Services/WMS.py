@@ -59,7 +59,7 @@ class WMS(Request):
 
         xml = """<?xml version='1.0' encoding="ISO-8859-1" standalone="no" ?>
         <!DOCTYPE WMT_MS_Capabilities SYSTEM 
-            "http://schemas.opengeospatial.net/wms/1.1.1/WMS_MS_Capabilities.dtd" [
+        "http://schemas.opengeospatial.net/wms/1.1.1/WMS_MS_Capabilities.dtd" [
               <!ELEMENT VendorSpecificCapabilities (TileSet*) >
               <!ELEMENT TileSet (SRS, BoundingBox?, Resolutions,
                                  Width, Height, Format, Layers*, Styles*) >
@@ -73,7 +73,7 @@ class WMS(Request):
           <Service>
             <Name>OGC:WMS</Name>
             <Title>%s</Title>
-            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="%s"/>
+<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="%s"/>
           </Service>
         """ % (
             description,
@@ -92,9 +92,7 @@ class WMS(Request):
                     xlink:href="%s"/></Get>
                   </HTTP>
                 </DCPType>
-              </GetCapabilities>""" % (
-            host
-        )
+              </GetCapabilities>""" % (host)
         xml += """
               <GetMap>"""
         for format in formats:
@@ -112,9 +110,7 @@ class WMS(Request):
                   </HTTP>
                 </DCPType>
               </GetMap>
-            </Request>""" % (
-            host
-        )
+            </Request>""" % (host)
         xml += """
             <Exception>
               <Format>text/plain</Format>

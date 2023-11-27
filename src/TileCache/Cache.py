@@ -14,7 +14,7 @@ class Cache(object):
         readonly=False,
         expire=False,
         sendfile=False,
-        **kwargs
+        **kwargs,
     ):
         """Constructor"""
         self.stale = float(stale_interval)
