@@ -17,8 +17,7 @@ class WMS(Request):
                 param[key] = ""
         if param["request"] == "GetCapabilities":
             return self.getCapabilities(host + path, param)
-        else:
-            return self.getMap(param)
+        return self.getMap(param)
 
     def getMap(self, param):
         bbox = map(float, param["bbox"].split(","))
@@ -36,8 +35,7 @@ class WMS(Request):
 
         if len(tiles) > 1:
             return tiles
-        else:
-            return tiles[0]
+        return tiles[0]
 
     def getCapabilities(self, host, param):
         if host[-1] not in "?&":

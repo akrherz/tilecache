@@ -304,7 +304,7 @@ class Layer(object):
             float(maxy - miny) / self.size[1],
         )
 
-    def getClosestLevel(self, res, size=[256, 256]):
+    def getClosestLevel(self, res, _size=None):
         diff = sys.maxint
         z = None
         for i in range(len(self.resolutions)):
@@ -313,13 +313,13 @@ class Layer(object):
                 z = i
         return z
 
-    def getLevel(self, res, size=[256, 256]):
+    def getLevel(self, res, size=None):
         """
         >>> l = Layer("name")
         >>> l.getLevel(.703125)
         0
         """
-
+        size = [256, 256] if size is None else size
         max_diff = res / max(size[0], size[1])
         z = None
         for i in range(len(self.resolutions)):

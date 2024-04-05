@@ -32,7 +32,7 @@ class Cache(object):
         result = self.attemptLock(tile)
         if result:
             return True
-        elif not blocking:
+        if not blocking:
             return False
         while result is not True:
             if time.time() - start_time > self.timeout:

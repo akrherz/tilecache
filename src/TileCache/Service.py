@@ -48,11 +48,11 @@ class Service(object):
         "files",
     )
 
-    def __init__(self, cache, layers, metadata=dict()):
+    def __init__(self, cache, layers, metadata=None):
         """Constructor"""
         self.cache = cache
         self.layers = layers
-        self.metadata = metadata
+        self.metadata = {} if metadata is None else metadata
 
     def _loadFromSection(cls, config, section, module, **objargs):
         """Unsure"""
