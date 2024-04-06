@@ -1,7 +1,5 @@
 """BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors"""
 
-import sys
-
 from six import string_types
 
 from TileCache.base import TileCacheException
@@ -304,15 +302,6 @@ class Layer(object):
             float(maxy - miny) / self.size[1],
         )
 
-    def getClosestLevel(self, res, _size=None):
-        diff = sys.maxint
-        z = None
-        for i in range(len(self.resolutions)):
-            if diff > abs(self.resolutions[i] - res):
-                diff = abs(self.resolutions[i] - res)
-                z = i
-        return z
-
     def getLevel(self, res, size=None):
         """
         >>> l = Layer("name")
@@ -336,74 +325,6 @@ class Layer(object):
                 % (res, self.resolutions)
             )
         return z
-
-    def getCell(self, arr):
-        """
-        Returns x, y, z
-
-        >>> l = Layer("name")
-        >>> l.bbox
-        (-180, -90, 180, 90)
-        >>> l.resolutions[0]
-        0.703125
-        >>> l.getCell((-180.,-90.,0.,90.))
-        (0, 0, 0)
-        >>> l.getCell((-45.,-45.,0.,0.))
-        (3, 1, 2)
-        """
-        (minx, miny, maxx, maxy) = arr
-        res = self.getResolution((minx, miny, maxx, maxy))
-        x = y = None
-
-        z = self.getLevel(res, self.size)
-
-        res = self.resolutions[z]
-
-        if self.extent_type == "strict" and not self.contains(
-            (minx, miny), res
-        ):
-            raise TileCacheException(
-                (
-                    "Lower left corner (%f, %f) is outside layer bounds %s. \n"
-                    "To remove this condition, set extent_type=loose in your "
-                    "configuration."
-                )
-                % (minx, miny, self.bbox)
-            )
-
-        x0 = (minx - self.bbox[0]) / (res * self.size[0])
-        y0 = (miny - self.bbox[1]) / (res * self.size[1])
-
-        x = int(x0)
-        y = int(y0)
-
-        tilex = (x * res * self.size[0]) + self.bbox[0]
-        tiley = (y * res * self.size[1]) + self.bbox[1]
-        if abs(minx - tilex) / res > 1:
-            raise TileCacheException(
-                "Current x value %f is too far from tile corner x %f"
-                % (minx, tilex)
-            )
-
-        if abs(miny - tiley) / res > 1:
-            raise TileCacheException(
-                "Current y value %f is too far from tile corner y %f"
-                % (miny, tiley)
-            )
-
-        return (x, y, z)
-
-    def getTile(self, bbox):
-        """
-        >>> l = Layer("name")
-        >>> l.getTile((-180,-90,0,90)).bbox()
-        '-180.0,-90.0,0.0,90.0'
-        """
-
-        coord = self.getCell(bbox)
-        if not coord:
-            return None
-        return Tile(self, *coord)
 
     def contains(self, arr, res=0):
         """
