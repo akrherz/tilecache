@@ -32,4 +32,4 @@ def test_wsgi_handler(service):
     sr = mock.MagicMock()
     res = wsgiHandler(env, sr, service)
     print(res)
-    assert wsgiHandler(env, sr, service)[0][:4] == b"\x89PNG"
+    assert res[:4] == b"\x89PNG"
