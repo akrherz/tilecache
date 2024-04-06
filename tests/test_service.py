@@ -20,6 +20,20 @@ def test_generate_crossdomain_xml(service):
     assert service.generate_crossdomain_xml() is not None
 
 
+def test_bad_xyz(service):
+    """Test what happens when we send a bad loc."""
+    env = {
+        "QUERY_STRING": "",
+        "PATH_INFO": "/1.0.0/usstates/7.333/32.33/49.33.png",
+        "REQUEST_METHOD": "GET",
+        "SCRIPT_NAME": "tile.py",
+        "wsgi.input": mock.MagicMock(),
+    }
+    sr = mock.MagicMock()
+    res = wsgiHandler(env, sr, service)
+    assert res[0][:4] == b"An e"
+
+
 def test_wsgi_handler(service):
     """Exercise API."""
     env = {

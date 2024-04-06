@@ -2,8 +2,6 @@
 
 from six import string_types
 
-from TileCache.base import TileCacheException
-
 DEBUG = False
 
 
@@ -301,30 +299,6 @@ class Layer(object):
             float(maxx - minx) / self.size[0],
             float(maxy - miny) / self.size[1],
         )
-
-    def getLevel(self, res, size=None):
-        """
-        >>> l = Layer("name")
-        >>> l.getLevel(.703125)
-        0
-        """
-        size = [256, 256] if size is None else size
-        max_diff = res / max(size[0], size[1])
-        z = None
-        for i in range(len(self.resolutions)):
-            if abs(self.resolutions[i] - res) < max_diff:
-                res = self.resolutions[i]
-                z = i
-                break
-        if z is None:
-            raise TileCacheException(
-                (
-                    "can't find resolution index for %f. "
-                    "Available resolutions are: \n%s"
-                )
-                % (res, self.resolutions)
-            )
-        return z
 
     def contains(self, arr, res=0):
         """
