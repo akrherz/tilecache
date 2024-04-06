@@ -24,10 +24,10 @@ def test_wsgi_handler(service):
     """Exercise API."""
     env = {
         "QUERY_STRING": "",
-        "PATH_INFO": "/1.0.0/profit2015/0/0/0.jpg",
+        "PATH_INFO": "/1.0.0/usstates/7/32/49.png",
         "REQUEST_METHOD": "GET",
         "SCRIPT_NAME": "tile.py",
         "wsgi.input": mock.MagicMock(),
     }
     sr = mock.MagicMock()
-    assert wsgiHandler(env, sr, service) is not None
+    assert wsgiHandler(env, sr, service)[0][:4] == b"\x89PNG"

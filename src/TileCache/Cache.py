@@ -26,14 +26,12 @@ class Cache(object):
         if expire is not False:
             self.expire = float(expire)
 
-    def lock(self, tile, blocking=True):
+    def lock(self, tile):
         """locking"""
         start_time = time.time()
         result = self.attemptLock(tile)
         if result:
             return True
-        if not blocking:
-            return False
         while result is not True:
             if time.time() - start_time > self.timeout:
                 raise Exception(
