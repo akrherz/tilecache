@@ -337,7 +337,7 @@ class Layer(object):
             )
         return z
 
-    def getCell(self, arr, exact=True):
+    def getCell(self, arr):
         """
         Returns x, y, z
 
@@ -355,17 +355,12 @@ class Layer(object):
         res = self.getResolution((minx, miny, maxx, maxy))
         x = y = None
 
-        if exact:
-            z = self.getLevel(res, self.size)
-        else:
-            z = self.getClosestLevel(res, self.size)
+        z = self.getLevel(res, self.size)
 
         res = self.resolutions[z]
 
-        if (
-            exact
-            and self.extent_type == "strict"
-            and not self.contains((minx, miny), res)
+        if self.extent_type == "strict" and not self.contains(
+            (minx, miny), res
         ):
             raise TileCacheException(
                 (
@@ -384,32 +379,19 @@ class Layer(object):
 
         tilex = (x * res * self.size[0]) + self.bbox[0]
         tiley = (y * res * self.size[1]) + self.bbox[1]
-        if exact:
-            if abs(minx - tilex) / res > 1:
-                raise TileCacheException(
-                    "Current x value %f is too far from tile corner x %f"
-                    % (minx, tilex)
-                )
+        if abs(minx - tilex) / res > 1:
+            raise TileCacheException(
+                "Current x value %f is too far from tile corner x %f"
+                % (minx, tilex)
+            )
 
-            if abs(miny - tiley) / res > 1:
-                raise TileCacheException(
-                    "Current y value %f is too far from tile corner y %f"
-                    % (miny, tiley)
-                )
+        if abs(miny - tiley) / res > 1:
+            raise TileCacheException(
+                "Current y value %f is too far from tile corner y %f"
+                % (miny, tiley)
+            )
 
         return (x, y, z)
-
-    def getClosestCell(self, z, arr):
-        """
-        >>> l = Layer("name")
-        >>> l.getClosestCell(2, (84, 17))
-        (6, 2, 2)
-        """
-        (minx, miny) = arr
-        res = self.resolutions[z]
-        maxx = minx + self.size[0] * res
-        maxy = miny + self.size[1] * res
-        return self.getCell((minx, miny, maxx, maxy), False)
 
     def getTile(self, bbox):
         """
