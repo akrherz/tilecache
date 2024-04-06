@@ -45,8 +45,6 @@ jobs:
         git clone --depth 1 https://github.com/akrherz/ci_tooling.git .ci_tooling
         . .ci_tooling/memcached.sh
 
-    - name: Remote SSH Debug
-      uses: lhotari/action-upterm@v1
     - name: Build and Test
       run: |
         set -e
