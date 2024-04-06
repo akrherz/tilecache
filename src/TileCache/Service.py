@@ -18,7 +18,6 @@ from TileCache.base import (
     TileCacheLayerNotFoundException,
 )
 from TileCache.Services.TMS import TMS
-from TileCache.Services.WMS import WMS
 
 cfgfiles = (
     "/etc/tilecache.cfg",
@@ -48,11 +47,11 @@ class Service(object):
         "files",
     )
 
-    def __init__(self, cache, layers, metadata=dict()):
+    def __init__(self, cache, layers, metadata=None):
         """Constructor"""
         self.cache = cache
         self.layers = layers
-        self.metadata = metadata
+        self.metadata = {} if metadata is None else metadata
 
     def _loadFromSection(cls, config, section, module, **objargs):
         """Unsure"""
@@ -206,18 +205,7 @@ class Service(object):
         if path_info.find("crossdomain.xml") != -1:
             return self.generate_crossdomain_xml()
 
-        # We currently are just supporting TMS or WMS REquests
-        if (
-            "service" in params
-            or "SERVICE" in params
-            or "REQUEST" in params
-            and params["REQUEST"] == "GetMap"
-            or "request" in params
-            and params["request"] == "GetMap"
-        ):
-            tile = WMS(self).parse(params, path_info, host)
-        else:
-            tile = TMS(self).parse(params, path_info, host)
+        tile = TMS(self).parse(params, path_info, host)
         if not hasattr(tile, "layer"):
             return "text/xml", tile.data.encode("utf-8")
         return self.renderTile(tile, "FORCE" in params)

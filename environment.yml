@@ -1,5 +1,7 @@
 dependencies:
  - codecov
+ # testing
+ - mock
  - paste
  - six
  - pymemcache
