@@ -11,6 +11,7 @@ from six import string_types
 
 import TileCache.Cache as Cache
 import TileCache.Layer as Layer
+from TileCache import InvalidTMSRequest
 from TileCache.base import (
     MalformedRequestException,
     TileCacheException,
@@ -253,21 +254,8 @@ def wsgiHandler(environ, start_response, service):
             f"[client: {environ.get('REMOTE_ADDR')}] Path: {path_info} "
             f"Err: {exp} Referrer: {environ.get('HTTP_REFERER')} REDIRECT\n"
         )
-        # Hacky way to get us back in the front door with a 404
-        start_response(
-            "301 Moved Permanently",
-            [
-                (
-                    "Location",
-                    (
-                        f"{environ.get('REQUEST_SCHEME', 'https')}://"
-                        f"{environ.get('SERVER_NAME', 'localhost')}"
-                        f"/redirected{path_info}"
-                    ),
-                )
-            ],
-        )
-        return [b""]
+        # reraise for others to handle
+        raise InvalidTMSRequest(str(exp)) from exp
     except TileCacheException as exp:
         status = "404 File Not Found"
         msg = f"An error occurred: {exp}"
