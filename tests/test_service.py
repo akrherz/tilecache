@@ -21,6 +21,33 @@ def test_generate_crossdomain_xml(service):
     assert service.generate_crossdomain_xml() is not None
 
 
+def test_idep(service):
+    """Test that we can generate a capabilities response."""
+    env = {
+        "QUERY_STRING": "",
+        "PATH_INFO": "/1.0.0/idep::vsm0::20240101/7/32/49.png",
+        "REQUEST_METHOD": "GET",
+        "SCRIPT_NAME": "tile.py",
+        "wsgi.input": mock.MagicMock(),
+    }
+    sr = mock.MagicMock()
+    wsgiHandler(env, sr, service)
+
+
+def test_capabilities(service):
+    """Test that we can generate a capabilities response."""
+    env = {
+        "QUERY_STRING": "",
+        "PATH_INFO": "/1.0.0/",
+        "REQUEST_METHOD": "GET",
+        "SCRIPT_NAME": "tile.py",
+        "wsgi.input": mock.MagicMock(),
+    }
+    sr = mock.MagicMock()
+    res = wsgiHandler(env, sr, service)
+    assert res[0][:4] == b"<?xm"
+
+
 def test_invalidtmsrequest(service):
     """Test that we raise an exception."""
     env = {

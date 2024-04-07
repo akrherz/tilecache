@@ -2,8 +2,6 @@
 BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors
 """
 
-import time
-
 # Important to use a thread-safe pool as mod_wsgi is running this in threads
 from pymemcache.client.hash import HashClient
 from six import string_types
@@ -39,18 +37,3 @@ class Memcached(Cache):
         key = self.getKey(tile)
         self.cache.set(key, data, self.timeout)
         return data
-
-    def delete(self, tile):
-        """Delete a tile from the cache"""
-        key = self.getKey(tile)
-        self.cache.delete(key)
-
-    def attemptLock(self, tile):
-        """Attempt to lock the cache for a tile"""
-        return self.cache.add(
-            self.getLockName(tile), "0", time.time() + self.timeout
-        )
-
-    def unlock(self, tile):
-        """Attempt to unlock the cache for a tile"""
-        self.cache.delete(self.getLockName(tile))
