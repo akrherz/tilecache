@@ -38,6 +38,12 @@ class Request(object):
 
     def getLayer(self, layername):
         """implements some custom logic here for the provided layername"""
+        # GH33 remove 20 some year legacy of having -900913 in the layername
+        layername = layername.replace("-900913", "")
+        layer = self.service.layers.get(layername)
+        # If the layername is known, there is no logic to implement
+        if layer is not None:
+            return layer
         if layername.startswith("idep"):
             (lbl, ltype, date) = layername.split("::", 3)
             scenario = lbl[4:]
@@ -168,10 +174,8 @@ class Request(object):
                 prod,
                 uri,
             )
-        else:
-            layer = self.service.layers.get(layername, None)
-            if layer is None:
-                raise TileCacheLayerNotFoundException(
-                    ("Layer %s not found") % (layername,)
-                )
+        if layer is None:
+            raise TileCacheLayerNotFoundException(
+                f"Layer {layername} not found"
+            )
         return layer
