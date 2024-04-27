@@ -38,6 +38,8 @@ class Request(object):
 
     def getLayer(self, layername):
         """implements some custom logic here for the provided layername"""
+        # GH33 remove 20 some year legacy of having -900913 in the layername
+        layername = layername.replace("-900913", "")
         layer = self.service.layers.get(layername)
         # If the layername is known, there is no logic to implement
         if layer is not None:

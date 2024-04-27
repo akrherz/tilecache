@@ -21,6 +21,20 @@ def test_generate_crossdomain_xml(service):
     assert service.generate_crossdomain_xml() is not None
 
 
+def test_gh33_remove_900913(service):
+    """Test that the service can remove 900913 from the layername."""
+    env = {
+        "QUERY_STRING": "",
+        "PATH_INFO": "/1.0.0/c-900913/7/32/49.png",
+        "REQUEST_METHOD": "GET",
+        "SCRIPT_NAME": "tile.py",
+        "wsgi.input": mock.MagicMock(),
+    }
+    sr = mock.MagicMock()
+    res = wsgiHandler(env, sr, service)
+    assert res[0][:4] == b"\x89PNG"
+
+
 def test_idep(service):
     """Test that we can generate a capabilities response."""
     env = {
@@ -46,6 +60,19 @@ def test_capabilities(service):
     sr = mock.MagicMock()
     res = wsgiHandler(env, sr, service)
     assert res[0][:4] == b"<?xm"
+
+
+def test_invalid_layername(service):
+    """Test that we raise an exception."""
+    env = {
+        "QUERY_STRING": "",
+        "PATH_INFO": "/1.0.0/doesntexst/robots.txt",
+        "REQUEST_METHOD": "GET",
+        "SCRIPT_NAME": "tile.py",
+        "wsgi.input": mock.MagicMock(),
+    }
+    sr = mock.MagicMock()
+    assert wsgiHandler(env, sr, service)[0].find(b"doesntexst") > 0
 
 
 def test_invalidtmsrequest(service):
