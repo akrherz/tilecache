@@ -4,6 +4,7 @@ import os
 
 import mock
 import pytest
+
 from TileCache import InvalidTMSRequest
 from TileCache.Service import Service, wsgiHandler
 
