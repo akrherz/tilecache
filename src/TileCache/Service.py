@@ -250,8 +250,11 @@ def wsgiHandler(environ, start_response, service):
             return []
         return [image]
     except MalformedRequestException as exp:
+        _client = environ.get(
+            "HTTP_X_FORWARDED_FOR", environ.get("REMOTE_ADDR")
+        )
         sys.stderr.write(
-            f"[client: {environ.get('REMOTE_ADDR')}] Path: {path_info} "
+            f"[client: {_client}] Path: {path_info} "
             f"Err: {exp} Referrer: {environ.get('HTTP_REFERER')} REDIRECT\n"
         )
         # reraise for others to handle
