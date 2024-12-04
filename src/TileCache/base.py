@@ -105,9 +105,10 @@ class Request(object):
             )
         elif layername.startswith("hrrr::"):
             (prod, ftime, tstring) = (layername.split("::")[1]).split("-")
+            ptype = "d" if layername.find("REFD") > 0 else "p"
             if len(tstring) == 12:
-                mylayername = "hrrr-refd-t"
-                mslayer = "refd-t"
+                mylayername = f"hrrr-ref{ptype}-t"
+                mslayer = f"ref{ptype}-t"
                 year = tstring[:4]
                 month = tstring[4:6]
                 day = tstring[6:8]
@@ -120,8 +121,8 @@ class Request(object):
                     ftime[1:],
                 )
             else:
-                mylayername = "hrrr-refd"
-                mslayer = "refd_%s" % (ftime[1:],)
+                mylayername = f"hrrr-ref{ptype}"
+                mslayer = f"ref{ptype}_{ftime[1:]}"
                 uri = ""
             layer = copy.copy(self.service.layers[mylayername])
             layer.name = layername
