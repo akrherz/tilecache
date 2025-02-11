@@ -1,7 +1,7 @@
 """Baseline objects to allow cleaner imports"""
 
 import copy
-import datetime
+from datetime import datetime, timedelta, timezone
 
 
 class MalformedRequestException(Exception):
@@ -132,7 +132,7 @@ class Request(object):
             (sector, prod, tstring) = (layername.split("::")[1]).split("-")
             if len(tstring) == 12:
                 utcnow = (
-                    datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
+                    datetime.now(timezone.utc) + timedelta(minutes=5)
                 ).strftime("%Y%m%d%H%M")
                 if tstring > utcnow:
                     raise TileCacheFutureException(
