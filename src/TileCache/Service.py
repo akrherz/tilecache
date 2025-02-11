@@ -143,8 +143,6 @@ class Service(object):
     def renderTile(self, tile, force=False):
         """render a Tile please"""
         layer = tile.layer
-        if layer.debug:
-            start = time.time()
 
         # do more cache checking here: SRS, width, height, layers
 
@@ -157,33 +155,6 @@ class Service(object):
                 image = self.cache.set(tile, data)
             else:
                 raise Exception("Zero length data returned from layer.")
-            if layer.debug:
-                sys.stderr.write(
-                    ("Cache miss: %s, Tile: x: %s, y: %s, z: %s, time: %s\n")
-                    % (
-                        tile.bbox(),
-                        tile.x,
-                        tile.y,
-                        tile.z,
-                        (time.time() - start),
-                    )
-                )
-        else:
-            if layer.debug:
-                sys.stderr.write(
-                    (
-                        "Cache hit: %s, Tile: x: %s, y: %s, z: %s, "
-                        "time: %s, debug: %s\n"
-                    )
-                    % (
-                        tile.bbox(),
-                        tile.x,
-                        tile.y,
-                        tile.z,
-                        (time.time() - start),
-                        layer.debug,
-                    )
-                )
 
         return (layer.mime_type, image)
 
