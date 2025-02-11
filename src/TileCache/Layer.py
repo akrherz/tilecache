@@ -408,5 +408,5 @@ class MetaLayer(Layer):
         y = int(tile.y / self.metaSize[1])
         return MetaTile(self, x, y, tile.z)
 
-    def render(self, tile, force=False):
+    def render(self, tile, **kwargs):
         return self.renderTile(tile)
