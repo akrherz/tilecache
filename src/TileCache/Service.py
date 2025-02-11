@@ -159,10 +159,7 @@ class Service(object):
                 raise Exception("Zero length data returned from layer.")
             if layer.debug:
                 sys.stderr.write(
-                    (
-                        "Cache miss: %s, Tile: x: %s, y: %s, z: %s, "
-                        "time: %s\n"
-                    )
+                    ("Cache miss: %s, Tile: x: %s, y: %s, z: %s, time: %s\n")
                     % (
                         tile.bbox(),
                         tile.x,
