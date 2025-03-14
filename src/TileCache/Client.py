@@ -7,7 +7,7 @@ try:
 except ImportError:
     from urllib import urlencode
 
-import requests
+import httpx
 
 # setting this to True will exchange more useful error messages
 # for privacy, hiding URLs and error messages.
@@ -45,18 +45,18 @@ class WMS(object):
 
     def fetch(self):
         """Fetch image from backend"""
-        req = requests.get(self.url())
-        data = req.content
-        if req.headers.get("content-type") != "image/png":
+        resp = httpx.get(self.url(), timeout=20)
+        data = resp.content
+        if resp.headers.get("content-type") != "image/png":
             raise Exception(
                 (
                     "Did not get image data back. \n"
                     "URL: %s\nStatus: %s\n"
                     "Response: \n%s"
                 )
-                % (self.url(), req.status_code, data)
+                % (self.url(), resp.status_code, data)
             )
-        return data, req
+        return data, resp
 
     def setBBox(self, box):
         """set bounding box"""
