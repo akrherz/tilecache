@@ -49,7 +49,7 @@ jobs:
       run: |
         set -e
         python -m pip install . --upgrade
-        python -m pytest --cov=tilecache --cov-report=xml
+        python -m pytest --cov=TileCache --cov-report=xml
 
     - name: Code coverage
       if: ${{ env.PYTHON_VERSION == '3.12' }}
@@ -57,3 +57,4 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage.xml
+        fail_ci_if_error: true
