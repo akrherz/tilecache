@@ -12,7 +12,7 @@ from six import string_types
 
 import TileCache.Cache as Cache
 import TileCache.Layer as Layer
-from TileCache import InvalidTMSRequest
+from TileCache import BackendWMSFailure, InvalidTMSRequest
 from TileCache.base import (
     MalformedRequestException,
     TileCacheException,
@@ -227,9 +227,9 @@ def wsgiHandler(environ, start_response, service):
     except TileCacheLayerNotFoundException as exp:
         status = "404 File Not Found"
         msg = f"TileCacheLayerNotFoundException: {exp}"
-    except TileCacheFutureException as exp:
-        status = "500 Internal Server Error"
-        msg = "%s" % (str(exp),)
+    except (BackendWMSFailure, TileCacheFutureException) as exp:
+        status = "503 Service Unavailable"
+        msg = f"{exp}"
     except Exception as exp:
         status = "500 Internal Server Error"
         E = str(exp)

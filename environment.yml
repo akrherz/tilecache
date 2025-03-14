@@ -9,6 +9,8 @@ dependencies:
  - pymemcache
  - pytest
  - pytest-cov
+ # mocking httpx
+ - pytest-httpx
  - pytest-runner
  # testing
  - werkzeug
