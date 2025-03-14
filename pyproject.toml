@@ -16,6 +16,9 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 dynamic = [ "version" ]
+dependencies = [
+  "httpx",
+]
 
 urls."homepage" = "https://github.com/akrherz/tilecache"
 

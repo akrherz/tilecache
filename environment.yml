@@ -1,5 +1,7 @@
 dependencies:
  - codecov
+ # WMS Requests
+ - httpx
  # testing
  - mock
  - paste
@@ -7,6 +9,8 @@ dependencies:
  - pymemcache
  - pytest
  - pytest-cov
+ # mocking httpx
+ - pytest-httpx
  - pytest-runner
  # testing
  - werkzeug

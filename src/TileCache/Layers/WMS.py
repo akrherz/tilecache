@@ -47,5 +47,5 @@ class WMS(MetaLayer):
             self.user,
             self.password,
         )
-        tile.data, _response = wms.fetch()
+        tile.data = wms.fetch()
         return tile.data

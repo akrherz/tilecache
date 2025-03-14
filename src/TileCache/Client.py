@@ -6,8 +6,12 @@ try:
     from urllib.parse import urlencode
 except ImportError:
     from urllib import urlencode
+import time
+from typing import Optional
 
-import requests
+import httpx
+
+from TileCache import BackendWMSFailure
 
 # setting this to True will exchange more useful error messages
 # for privacy, hiding URLs and error messages.
@@ -43,20 +47,36 @@ class WMS(object):
         """Generate URL"""
         return self.base + urlencode(self.params)
 
-    def fetch(self):
+    def fetch(self) -> Optional[bytes]:
         """Fetch image from backend"""
-        req = requests.get(self.url())
-        data = req.content
-        if req.headers.get("content-type") != "image/png":
-            raise Exception(
-                (
-                    "Did not get image data back. \n"
-                    "URL: %s\nStatus: %s\n"
-                    "Response: \n%s"
-                )
-                % (self.url(), req.status_code, data)
-            )
-        return data, req
+        data = None
+        for attempt in range(1, 3):
+            try:
+                resp = httpx.get(self.url(), timeout=20)
+                # Error if we don't get a 200
+                resp.raise_for_status()
+                # Error if we don't get an image back
+                if resp.headers.get("content-type") != "image/png":
+                    # Account for an edge case of Mapserver failing due to
+                    # file getting replaced underneath its cached reference
+                    if (
+                        attempt == 1
+                        and resp.text.find("IReadBlock failed at") > -1
+                    ):
+                        time.sleep(1)
+                        continue
+                    msg = (
+                        "Did not get image data back. \n"
+                        f"URL: {self.url()}\nStatus: {resp.status_code}\n"
+                        f"Response: \n{resp.text}"
+                    )
+                    raise BackendWMSFailure(msg)
+                data = resp.content
+                break
+            except httpx.HTTPError as exc:
+                if attempt == 2:
+                    raise BackendWMSFailure("WMS image failure") from exc
+        return data
 
     def setBBox(self, box):
         """set bounding box"""
