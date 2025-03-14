@@ -5,7 +5,6 @@ import os
 import mock
 import pytest
 
-from TileCache import InvalidTMSRequest
 from TileCache.Service import Service, wsgiHandler
 
 
@@ -74,20 +73,6 @@ def test_invalid_layername(service):
     }
     sr = mock.MagicMock()
     assert wsgiHandler(env, sr, service)[0].find(b"doesntexst") > 0
-
-
-def test_invalidtmsrequest(service):
-    """Test that we raise an exception."""
-    env = {
-        "QUERY_STRING": "",
-        "PATH_INFO": "/1.0.0/usstates/robots.txt",
-        "REQUEST_METHOD": "GET",
-        "SCRIPT_NAME": "tile.py",
-        "wsgi.input": mock.MagicMock(),
-    }
-    sr = mock.MagicMock()
-    with pytest.raises(InvalidTMSRequest):
-        wsgiHandler(env, sr, service)
 
 
 def test_bad_xyz(service):

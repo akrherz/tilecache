@@ -22,11 +22,13 @@ class TMS(Request):
         if len(parts) < 2:
             return self.serviceCapabilities(host, self.service.layers)
         layer = self.getLayer(parts[1])
-        if len(parts) < 3:
+        if len(parts) < 5:
             return self.layerCapabilities(host, layer)
+        if len(parts) > 5:
+            raise MalformedRequestException("Too many path parts provided.")
         if parts[2] == "{z}":
             raise TileCacheException("{z} was provided instead of value.")
-        parts[-1] = parts[-1].split(".")[0]
+        parts[4] = parts[4].split(".")[0]
         tile = None
         if layer.tms_type == "google" or fields.get("type") == "google":
             try:
