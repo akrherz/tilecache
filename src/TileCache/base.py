@@ -3,6 +3,11 @@
 import copy
 from datetime import datetime, timedelta, timezone
 
+CANT_CALL_DIRECTLY = (
+    "idep goes_east goes_west goes goes-t mrms mrms-t hrrr-refd hrrr-refp "
+    "hrrr-refd-t hrrr-refp-t"
+).split()
+
 
 class MalformedRequestException(Exception):
     """Exception raised when a request is malformed"""
@@ -40,6 +45,12 @@ class Request(object):
         """implements some custom logic here for the provided layername"""
         # GH33 remove 20 some year legacy of having -900913 in the layername
         layername = layername.replace("-900913", "")
+        # These layers can't be called directly without name overloads
+        if layername in CANT_CALL_DIRECTLY:
+            raise TileCacheLayerNotFoundException(
+                f"Layer {layername} can not be called directly, please "
+                "include name overloads."
+            )
         layer = self.service.layers.get(layername)
         # If the layername is known, there is no logic to implement
         if layer is not None:
@@ -65,6 +76,8 @@ class Request(object):
             layer.layers = "%s_%s" % (sector, channel)
         elif layername.startswith("mrms::"):
             # mrms::a2m-202307101700
+            if layername.find("::") == -1:
+                raise MalformedRequestException("Invalid MRMS request")
             (prod, tstring) = (layername.split("::")[1]).split("-")
             if len(tstring) == 12:
                 mylayername = "mrms-t"

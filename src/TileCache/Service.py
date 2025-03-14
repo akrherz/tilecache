@@ -5,6 +5,7 @@ import email
 import os
 import sys
 import time
+import traceback
 
 from paste.request import parse_formvars
 from six import string_types
@@ -224,8 +225,8 @@ def wsgiHandler(environ, start_response, service):
         status = "404 File Not Found"
         msg = f"An error occurred: {exp}"
     except TileCacheLayerNotFoundException as exp:
-        status = "500 Internal Server Error"
-        msg = "%s" % (str(exp),)
+        status = "404 File Not Found"
+        msg = f"TileCacheLayerNotFoundException: {exp}"
     except TileCacheFutureException as exp:
         status = "500 Internal Server Error"
         msg = "%s" % (str(exp),)
@@ -236,10 +237,12 @@ def wsgiHandler(environ, start_response, service):
         if E.find("Corrupt, empty or missing file") == -1:
             emsg = E.replace("\n", " ")
             sys.stderr.write(
-                f"[client: {environ.get('REMOTE_ADDR')}] Path: {path_info} "
+                f"TileCache Exception [client: {environ.get('REMOTE_ADDR')}] "
+                f"Path: {path_info} "
                 f"Err: {emsg} Referrer: {environ.get('HTTP_REFERER')}\n"
             )
-        msg = "An error occurred: %s\n" % (exp,)
+            traceback.print_exc()
+        msg = f"An error occurred: {exp}\n"
 
     start_response(status, [("Content-Type", "text/plain")])
     if isinstance(msg, string_types):
