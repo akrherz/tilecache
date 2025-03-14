@@ -22,6 +22,14 @@ def client():
     return Client(app)
 
 
+def test_wms_500s(httpx_mock: HTTPXMock, client):
+    """Test what happens when two WMS requests fail."""
+    httpx_mock.add_response(status_code=404)
+    httpx_mock.add_response(status_code=404)
+    res = client.get("/1.0.0/profit2015/10/279/429.png")
+    assert res.status_code == 503
+
+
 def test_wms_failure(httpx_mock: HTTPXMock, client):
     """Test a backend WMS Failure."""
     httpx_mock.add_response(status_code=200, content=b"..IReadBlock failed at")

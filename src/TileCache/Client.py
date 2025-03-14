@@ -73,9 +73,9 @@ class WMS(object):
                     raise BackendWMSFailure(msg)
                 data = resp.content
                 break
-            except httpx.RequestError as exc:
+            except httpx.HTTPError as exc:
                 if attempt == 2:
-                    raise exc
+                    raise BackendWMSFailure("WMS image failure") from exc
         return data
 
     def setBBox(self, box):
