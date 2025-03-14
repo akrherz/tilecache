@@ -1,18 +1,41 @@
-[tool.pytest.ini_options]
-filterwarnings = [
-    "ignore:numpy.ndarray size changed:RuntimeWarning",
-    "ignore:'cgi' is deprecated and slated for removal:DeprecationWarning",
+[build-system]
+build-backend = "setuptools.build_meta"
+
+requires = [ "setuptools>=64", "setuptools-scm>=8" ]
+
+[project]
+name = "tilecache"
+description = "A web map tile caching system"
+readme = "README.md"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
+dynamic = [ "version" ]
+
+urls."homepage" = "https://github.com/akrherz/tilecache"
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
 
 [tool.ruff]
 line-length = 79
 
-[tool.ruff.lint]
-select = [
-    "B",  # bugbear
-    "E",
-    "F",
-    "I",
-    "R",
-    "T",
+lint.select = [
+  "B", # bugbear
+  "E",
+  "F",
+  "I",
+  "R",
+  "T",
+]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+  "ignore:numpy.ndarray size changed:RuntimeWarning",
+  "ignore:'cgi' is deprecated and slated for removal:DeprecationWarning",
 ]
