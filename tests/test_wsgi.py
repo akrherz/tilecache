@@ -22,6 +22,12 @@ def client():
     return Client(app)
 
 
+def test_index_error_invalid_zoom(client):
+    """Test the error when we request too high a zoom value."""
+    res = client.get("/1.0.0/profit2015/109/279/429.png")
+    assert res.status_code == 422
+
+
 def test_wms_500s(httpx_mock: HTTPXMock, client):
     """Test what happens when two WMS requests fail."""
     httpx_mock.add_response(status_code=404)

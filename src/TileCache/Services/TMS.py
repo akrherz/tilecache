@@ -1,6 +1,7 @@
 # BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors
 
 import TileCache.Layer as Layer
+from TileCache import OutOfBoundsZoomLevel
 from TileCache.base import (
     Capabilities,
     MalformedRequestException,
@@ -34,10 +35,12 @@ class TMS(Request):
             try:
                 # TODO unsure what should be done about fractional res
                 zoom = int(float(parts[2]))
-                res = layer.resolutions[zoom]
             except ValueError as exp:  # Likely garbage sent
                 msg = f"Invalid zoom level {parts[2]}."
                 raise MalformedRequestException(msg) from exp
+            if zoom < 0 or zoom >= len(layer.resolutions):
+                raise OutOfBoundsZoomLevel(zoom)
+            res = layer.resolutions[zoom]
             maxY = (
                 int(
                     round(

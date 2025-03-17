@@ -7,3 +7,7 @@ class BackendWMSFailure(Exception):
 
 class InvalidTMSRequest(Exception):
     """Raised when a TMS request is invalid."""
+
+
+class OutOfBoundsZoomLevel(Exception):
+    """Raised when the zoom level is out of bounds."""
