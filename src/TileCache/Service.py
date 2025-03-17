@@ -12,7 +12,11 @@ from six import string_types
 
 import TileCache.Cache as Cache
 import TileCache.Layer as Layer
-from TileCache import BackendWMSFailure, InvalidTMSRequest
+from TileCache import (
+    BackendWMSFailure,
+    InvalidTMSRequest,
+    OutOfBoundsZoomLevel,
+)
 from TileCache.base import (
     MalformedRequestException,
     TileCacheException,
@@ -221,6 +225,9 @@ def wsgiHandler(environ, start_response, service):
     except MalformedRequestException as exp:
         # reraise for others to handle
         raise InvalidTMSRequest(str(exp)) from exp
+    except OutOfBoundsZoomLevel as exp:
+        status = "422 Unprocessable Entity"
+        msg = f"OutOfBoundsZoomLevel: {exp}"
     except TileCacheException as exp:
         status = "404 File Not Found"
         msg = f"An error occurred: {exp}"
