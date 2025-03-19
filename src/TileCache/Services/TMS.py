@@ -32,7 +32,7 @@ class TMS(Request):
         parts[4] = parts[4].split(".")[0]
         tile = None
         try:
-            zoom = int(parts[2])
+            zoom = round(float(parts[2]))
             x = int(parts[3])
             y = int(parts[4])
         except ValueError as exp:

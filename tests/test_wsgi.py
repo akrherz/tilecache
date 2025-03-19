@@ -44,6 +44,12 @@ def test_wms_failure(httpx_mock: HTTPXMock, client):
     assert res.status_code == 503
 
 
+def test_250319_float_zoom(client):
+    """Unsure if this is valid or not, but alas."""
+    res = client.get("/1.0.0/c-900913/4.9/4/8.png")
+    assert res.status_code == 200
+
+
 def test_250319_badint(client):
     """Test the handling of a bad integer."""
     with pytest.raises(InvalidTMSRequest):
