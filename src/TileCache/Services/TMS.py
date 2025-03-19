@@ -31,13 +31,14 @@ class TMS(Request):
             raise TileCacheException("{z} was provided instead of value.")
         parts[4] = parts[4].split(".")[0]
         tile = None
+        try:
+            zoom = int(parts[2])
+            x = int(parts[3])
+            y = int(parts[4])
+        except ValueError as exp:
+            msg = f"Invalid, non-integer value provided: {exp}"
+            raise MalformedRequestException(msg) from exp
         if layer.tms_type == "google" or fields.get("type") == "google":
-            try:
-                # TODO unsure what should be done about fractional res
-                zoom = int(float(parts[2]))
-            except ValueError as exp:  # Likely garbage sent
-                msg = f"Invalid zoom level {parts[2]}."
-                raise MalformedRequestException(msg) from exp
             if zoom < 0 or zoom >= len(layer.resolutions):
                 raise OutOfBoundsZoomLevel(zoom)
             res = layer.resolutions[zoom]
@@ -49,11 +50,9 @@ class TMS(Request):
                 )
                 - 1
             )
-            tile = Layer.Tile(layer, int(parts[3]), maxY - int(parts[4]), zoom)
+            tile = Layer.Tile(layer, x, maxY - y, zoom)
         else:
-            tile = Layer.Tile(
-                layer, int(parts[3]), int(parts[4]), int(parts[2])
-            )
+            tile = Layer.Tile(layer, x, y, zoom)
         return tile
 
     def serverCapabilities(self, host):
