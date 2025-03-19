@@ -44,6 +44,14 @@ def test_wms_failure(httpx_mock: HTTPXMock, client):
     assert res.status_code == 503
 
 
+def test_250319_badint(client):
+    """Test the handling of a bad integer."""
+    with pytest.raises(InvalidTMSRequest):
+        client.get("/1.0.0/profit2015/10/a/429.png")
+    with pytest.raises(InvalidTMSRequest):
+        client.get("/1.0.0/profit2015/10/10/a.png")
+
+
 def test_250314_malformed_mrms(client):
     """Test the processing of mrms request without details."""
     res = client.get("/1.0.0/mrms/4/4/8.png")

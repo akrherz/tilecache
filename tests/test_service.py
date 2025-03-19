@@ -5,6 +5,7 @@ import os
 import mock
 import pytest
 
+from TileCache import InvalidTMSRequest
 from TileCache.Service import Service, wsgiHandler
 
 
@@ -85,8 +86,8 @@ def test_bad_xyz(service):
         "wsgi.input": mock.MagicMock(),
     }
     sr = mock.MagicMock()
-    res = wsgiHandler(env, sr, service)
-    assert res[0][:4] == b"An e"
+    with pytest.raises(InvalidTMSRequest):
+        wsgiHandler(env, sr, service)
 
 
 def test_wsgi_handler(service):
