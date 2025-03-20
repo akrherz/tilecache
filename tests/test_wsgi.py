@@ -44,6 +44,12 @@ def test_wms_failure(httpx_mock: HTTPXMock, client):
     assert res.status_code == 503
 
 
+def test_250320_hrrr(client):
+    """Test a HRRR request that has no backend layer defined."""
+    res = client.get("/1.0.0/hrrr::REFD-F0720-2025032000/4/4/8.png")
+    assert res.status_code == 404
+
+
 def test_250319_float_zoom(client):
     """Unsure if this is valid or not, but alas."""
     res = client.get("/1.0.0/c-900913/4.9/4/8.png")
