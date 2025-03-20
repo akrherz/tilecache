@@ -34,6 +34,15 @@ class Capabilities(object):
         self.data = data
 
 
+def _get_layer(service, layername: str):
+    """Safely get the layer from this service."""
+    layer = service.layers.get(layername)
+    if layer is not None:
+        return copy.copy(layer)
+    msg = f"Layer {layername} not found"
+    raise TileCacheLayerNotFoundException(msg)
+
+
 class Request(object):
     """object"""
 
@@ -65,13 +74,13 @@ class Request(object):
                 date[8:10],
                 scenario,
             )
-            layer = copy.copy(self.service.layers["idep"])
+            layer = _get_layer(self.service, "idep")
             layer.name = layername
             layer.layers = ltype
             layer.url = "%s%s" % (layer.metadata["baseurl"], uri)
         elif layername.startswith("goes_"):
             (_bogus, bird, sector, channel) = layername.split("_")
-            layer = copy.copy(self.service.layers["goes_%s" % (bird,)])
+            layer = _get_layer(self.service, f"goes_{bird}")
             layer.name = layername
             layer.layers = "%s_%s" % (sector, channel)
         elif layername.startswith("mrms::"):
@@ -88,7 +97,7 @@ class Request(object):
             else:
                 mylayername = "mrms"
                 uri = ""
-            layer = copy.copy(self.service.layers[mylayername])
+            layer = _get_layer(self.service, mylayername)
             layer.name = layername
             layer.url = f"{layer.metadata['baseurl']}prod={prod.lower()}&{uri}"
         elif layername.startswith("goes::"):
@@ -108,7 +117,7 @@ class Request(object):
             else:
                 mylayername = "goes"
                 uri = ""
-            layer = copy.copy(self.service.layers[mylayername])
+            layer = _get_layer(self.service, mylayername)
             layer.name = layername
             layer.url = "%sbird=%s&channel=%s&%s" % (
                 layer.metadata["baseurl"],
@@ -137,7 +146,7 @@ class Request(object):
                 mylayername = f"hrrr-ref{ptype}"
                 mslayer = f"ref{ptype}_{ftime[1:]}"
                 uri = ""
-            layer = copy.copy(self.service.layers[mylayername])
+            layer = _get_layer(self.service, mylayername)
             layer.name = layername
             layer.layers = mslayer
             layer.url = "%s%s" % (layer.metadata["baseurl"], uri)
@@ -180,7 +189,7 @@ class Request(object):
                 else:
                     mylayername = "ridge-single"
                 uri = ""
-            layer = copy.copy(self.service.layers[mylayername])
+            layer = _get_layer(self.service, mylayername)
             layer.name = layername
             layer.url = "%ssector=%s&prod=%s&%s" % (
                 layer.metadata["baseurl"],
