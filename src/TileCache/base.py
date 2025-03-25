@@ -151,7 +151,12 @@ class Request(object):
             layer.layers = mslayer
             layer.url = "%s%s" % (layer.metadata["baseurl"], uri)
         elif layername.find("::") > 0:
-            (sector, prod, tstring) = (layername.split("::")[1]).split("-")
+            params = layername.split("::")[1].split("-")
+            if len(params) != 3:
+                raise MalformedRequestException(
+                    "Request needs 3 parameters after '::' delimited by '-'"
+                )
+            (sector, prod, tstring) = params
             if len(tstring) == 12:
                 utcnow = (
                     datetime.now(timezone.utc) + timedelta(minutes=5)
