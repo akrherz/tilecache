@@ -56,6 +56,18 @@ def test_250320_hrrr(client):
     assert res.status_code == 404
 
 
+def test_250326_space_in_request(client):
+    """Test that a space in the request is handled correctly."""
+    with pytest.raises(InvalidTMSRequest):
+        client.get("/1.0.0/ridge::USCOMP-N0R-202502234:0%20/5/7/11.png")
+
+
+def test_valid_ridge_t_request(client):
+    """Test something that should work."""
+    res = client.get("/1.0.0/ridge::USCOMP-N0R-202502232330/5/7/11.png")
+    assert res.status_code == 200
+
+
 def test_250319_float_zoom(client):
     """Unsure if this is valid or not, but alas."""
     res = client.get("/1.0.0/c-900913/4.9/4/8.png")
