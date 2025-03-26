@@ -60,6 +60,11 @@ class Request(object):
                 f"Layer {layername} can not be called directly, please "
                 "include name overloads."
             )
+        # Don't allow whitespace in the layername
+        if " " in layername:
+            raise MalformedRequestException(
+                f"Layername {layername} contains whitespace"
+            )
         layer = self.service.layers.get(layername)
         # If the layername is known, there is no logic to implement
         if layer is not None:
