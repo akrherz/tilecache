@@ -26,8 +26,9 @@ urls."homepage" = "https://github.com/akrherz/tilecache"
 version_scheme = "post-release"
 
 [tool.ruff]
-line-length = 79
+target-version = "py310"
 
+line-length = 79
 lint.select = [
   "B", # bugbear
   "E",
