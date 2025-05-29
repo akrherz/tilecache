@@ -90,7 +90,7 @@ class Request(object):
             layer.layers = "%s_%s" % (sector, channel)
         elif layername.startswith("mrms::"):
             # mrms::a2m-202307101700
-            if layername.find("::") == -1:
+            if layername.find("::") == -1 or layername.find("-") == -1:
                 raise MalformedRequestException("Invalid MRMS request")
             (prod, tstring) = (layername.split("::")[1]).split("-")
             if len(tstring) == 12:

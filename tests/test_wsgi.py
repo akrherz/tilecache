@@ -82,6 +82,12 @@ def test_250319_badint(client):
         client.get("/1.0.0/profit2015/10/10/a.png")
 
 
+def test_250529_malformed_mrms_v2(client):
+    """Test the processing of a malformed mrms request."""
+    res = client.get("mrms::CAPE/8/62/101.png")
+    assert res.status_code == 404
+
+
 def test_250314_malformed_mrms(client):
     """Test the processing of mrms request without details."""
     res = client.get("/1.0.0/mrms/4/4/8.png")
