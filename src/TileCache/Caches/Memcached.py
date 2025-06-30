@@ -27,7 +27,11 @@ class Memcached(Cache):
     def get(self, tile):
         """Get the cache data"""
         key = self.getKey(tile)
-        tile.data = self.cache.get(key)
+        try:
+            tile.data = self.cache.get(key)
+        except Exception:
+            # Yes, we are silently ignoring errors here.
+            tile.data = None
         return tile.data
 
     def set(self, tile, data):
