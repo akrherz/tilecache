@@ -1,7 +1,5 @@
 """BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors"""
 
-from six import string_types
-
 DEBUG = False
 
 
@@ -63,42 +61,6 @@ class Tile(object):
         '-88.236288,11.95968,-83.138304,17.057664'
         """
         return ",".join(map(str, self.bounds()))
-
-
-class MetaTile(Tile):
-    """Class"""
-
-    def actualSize(self):
-        """
-        >>> l = MetaLayer("name")
-        >>> t = MetaTile(l, 0,0,0)
-        >>> t.actualSize()
-        (256, 256)
-        """
-        metaCols, metaRows = self.layer.getMetaSize(self.z)
-        return (self.layer.size[0] * metaCols, self.layer.size[1] * metaRows)
-
-    def size(self):
-        actual = self.actualSize()
-        return (
-            actual[0] + self.layer.metaBuffer[0] * 2,
-            actual[1] + self.layer.metaBuffer[1] * 2,
-        )
-
-    def bounds(self):
-        tilesize = self.actualSize()
-        res = self.layer.resolutions[self.z]
-        buffer = (
-            res * self.layer.metaBuffer[0],
-            res * self.layer.metaBuffer[1],
-        )
-        metaWidth = res * tilesize[0]
-        metaHeight = res * tilesize[1]
-        minx = self.layer.bbox[0] + self.x * metaWidth - buffer[0]
-        miny = self.layer.bbox[1] + self.y * metaHeight - buffer[1]
-        maxx = minx + metaWidth + 2 * buffer[0]
-        maxy = miny + metaHeight + 2 * buffer[1]
-        return (minx, miny, maxx, maxy)
 
 
 class Layer(object):
@@ -250,7 +212,7 @@ class Layer(object):
         self.extension = extension.lower()
         self.mime_type = mime_type or self.fmt()
 
-        if isinstance(debug, string_types):
+        if isinstance(debug, str):
             debug = debug.lower() not in ("false", "off", "no", "0")
         self.debug = debug
 
@@ -393,20 +355,6 @@ class MetaLayer(Layer):
                 metabuffer = (metabuffer[0], metabuffer[0])
         self.metaSize = metasize
         self.metaBuffer = metabuffer
-
-    def getMetaSize(self, z):
-        if not self.metaTile:
-            return (1, 1)
-        maxcol, maxrow = self.grid(z)
-        return (
-            min(self.metaSize[0], int(maxcol + 1)),
-            min(self.metaSize[1], int(maxrow + 1)),
-        )
-
-    def getMetaTile(self, tile):
-        x = int(tile.x / self.metaSize[0])
-        y = int(tile.y / self.metaSize[1])
-        return MetaTile(self, x, y, tile.z)
 
     def render(self, tile, **kwargs):
         return self.renderTile(tile)
