@@ -4,7 +4,6 @@ BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors
 
 # Important to use a thread-safe pool as mod_wsgi is running this in threads
 from pymemcache.client.hash import HashClient
-from six import string_types
 
 from TileCache.Cache import Cache
 
@@ -15,7 +14,7 @@ class Memcached(Cache):
     def __init__(self, servers="127.0.0.1:11211", **kwargs):
         """Constructor"""
         Cache.__init__(self, **kwargs)
-        if isinstance(servers, string_types):
+        if isinstance(servers, str):
             servers = [s.strip() for s in servers.split(",")]
         self.cache = HashClient(servers, use_pooling=True)
         self.timeout = int(kwargs.get("timeout", 0))

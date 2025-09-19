@@ -1,7 +1,5 @@
 """BSD Licensed, Copyright (c) 2006-2010 TileCache Contributors"""
 
-from six import string_types
-
 DEBUG = False
 
 
@@ -214,7 +212,7 @@ class Layer(object):
         self.extension = extension.lower()
         self.mime_type = mime_type or self.fmt()
 
-        if isinstance(debug, string_types):
+        if isinstance(debug, str):
             debug = debug.lower() not in ("false", "off", "no", "0")
         self.debug = debug
 

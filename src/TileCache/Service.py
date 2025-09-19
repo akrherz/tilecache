@@ -8,7 +8,6 @@ import time
 import traceback
 
 from paste.request import parse_formvars
-from six import string_types
 
 import TileCache.Cache as Cache
 import TileCache.Layer as Layer
@@ -252,6 +251,6 @@ def wsgiHandler(environ, start_response, service):
         msg = f"An error occurred: {exp}\n"
 
     start_response(status, [("Content-Type", "text/plain")])
-    if isinstance(msg, string_types):
+    if isinstance(msg, str):
         msg = msg.encode("utf-8")
     return [msg]
