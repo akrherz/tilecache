@@ -44,6 +44,12 @@ def test_wms_failure(httpx_mock: HTTPXMock, client):
     assert res.status_code == 503
 
 
+def test_invalid_goes(client):
+    """Test an invalid goes_ request."""
+    with pytest.raises(InvalidTMSRequest):
+        client.get("/1.0.0/goes_a_b/4/4/8.png")
+
+
 def test_250325_bad_ridge(client):
     """Test an incomplete ridge request."""
     with pytest.raises(InvalidTMSRequest):
@@ -66,6 +72,12 @@ def test_valid_ridge_t_request(client):
     """Test something that should work."""
     res = client.get("/1.0.0/ridge::USCOMP-N0R-202502232330/5/7/11.png")
     assert res.status_code == 200
+
+
+def test_valid_goes(client):
+    """Test a valid request."""
+    resp = client.get("/1.0.0/goes_east_conus_ch01/5/15/17.png")
+    assert resp.status_code == 404
 
 
 def test_250319_float_zoom(client):

@@ -50,7 +50,7 @@ class Request(object):
         """Constructor"""
         self.service = service
 
-    def getLayer(self, layername):
+    def getLayer(self, layername: str):
         """implements some custom logic here for the provided layername"""
         # GH33 remove 20 some year legacy of having -900913 in the layername
         layername = layername.replace("-900913", "")
@@ -84,7 +84,12 @@ class Request(object):
             layer.layers = ltype
             layer.url = "%s%s" % (layer.metadata["baseurl"], uri)
         elif layername.startswith("goes_"):
-            (_bogus, bird, sector, channel) = layername.split("_")
+            tokens = layername.split("_")
+            if len(tokens) != 4:
+                raise MalformedRequestException(
+                    f"Invalid GOES request `{layername}`"
+                )
+            (_bogus, bird, sector, channel) = tokens
             layer = _get_layer(self.service, f"goes_{bird}")
             layer.name = layername
             layer.layers = "%s_%s" % (sector, channel)
