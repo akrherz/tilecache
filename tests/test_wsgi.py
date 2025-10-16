@@ -74,6 +74,12 @@ def test_valid_ridge_t_request(client):
     assert res.status_code == 200
 
 
+def test_valid_goes(client):
+    """Test a valid request."""
+    resp = client.get("/1.0.0/goes_east_conus_ch01/5/15/17.png")
+    assert resp.status_code == 404
+
+
 def test_250319_float_zoom(client):
     """Unsure if this is valid or not, but alas."""
     res = client.get("/1.0.0/c-900913/4.9/4/8.png")
