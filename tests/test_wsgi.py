@@ -11,7 +11,7 @@ from TileCache.Service import Service, wsgiHandler
 
 
 @pytest.fixture
-def client():
+def client() -> Client:
     """Return a service object."""
 
     def app(environ, start_response):
@@ -20,6 +20,14 @@ def client():
         return wsgiHandler(environ, start_response, Service.load(cfg_fn))
 
     return Client(app)
+
+
+def test_non_ascii_key(client: Client):
+    """Test how we handle these naughty requests."""
+    with pytest.raises(InvalidTMSRequest):
+        client.get(
+            "/1.0.0/ridge::USCOMP-N0R-20251130740%E2%80%AFPM/11/384/821.png"
+        )
 
 
 def test_index_error_invalid_zoom(client):

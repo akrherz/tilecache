@@ -52,6 +52,14 @@ class Request(object):
 
     def getLayer(self, layername: str):
         """implements some custom logic here for the provided layername"""
+        # layername should be ASCII
+        try:
+            layername.encode("ascii")
+        except UnicodeEncodeError as exp:
+            raise MalformedRequestException(
+                f"Layername {layername} contains non-ascii characters"
+            ) from exp
+
         # GH33 remove 20 some year legacy of having -900913 in the layername
         layername = layername.replace("-900913", "")
         # These layers can't be called directly without name overloads
