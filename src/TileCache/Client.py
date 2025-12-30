@@ -9,7 +9,8 @@ except ImportError:
 import time
 from typing import Optional
 
-import httpx
+# httpx leaks memory for me at least!!!
+import requests
 
 from TileCache import BackendWMSFailure
 
@@ -52,7 +53,7 @@ class WMS(object):
         data = None
         for attempt in range(1, 3):
             try:
-                resp = httpx.get(self.url(), timeout=20)
+                resp = requests.get(self.url(), timeout=20)
                 # Error if we don't get a 200
                 resp.raise_for_status()
                 # Error if we don't get an image back
@@ -73,7 +74,7 @@ class WMS(object):
                     raise BackendWMSFailure(msg)
                 data = resp.content
                 break
-            except httpx.HTTPError as exc:
+            except requests.HTTPError as exc:
                 if attempt == 2:
                     raise BackendWMSFailure("WMS image failure") from exc
         return data

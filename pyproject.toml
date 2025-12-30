@@ -17,7 +17,7 @@ classifiers = [
 ]
 dynamic = [ "version" ]
 dependencies = [
-  "httpx",
+  "requests",
 ]
 
 urls."homepage" = "https://github.com/akrherz/tilecache"
