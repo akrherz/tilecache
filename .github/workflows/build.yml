@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.13"]
+        python-version: ["3.10", "3.13", "3.14"]
     env:
       PYTHON_VERSION: ${{ matrix.python-version }}
     steps:
@@ -34,7 +34,6 @@ jobs:
         condarc: |
           channels:
             - conda-forge
-            - defaults
         create-args: >-
           python=${{ env.PYTHON_VERSION }}
         environment-name: prod
@@ -52,7 +51,7 @@ jobs:
         python -m pytest --cov=TileCache --cov-report=xml
 
     - name: Code coverage
-      if: ${{ env.PYTHON_VERSION == '3.13' }}
+      if: ${{ env.PYTHON_VERSION == '3.14' }}
       uses: codecov/codecov-action@v5
       with:
         files: coverage.xml
