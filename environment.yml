@@ -1,15 +1,14 @@
 dependencies:
  - codecov
- # WMS Requests
- - httpx
  # testing
  - mock
  - paste
  - pymemcache
  - pytest
  - pytest-cov
- # mocking httpx
- - pytest-httpx
  - pytest-runner
+ # WMS Requests, httpx was found to leak memory :(
+ - requests
+ - requests-mock
  # testing
  - werkzeug
