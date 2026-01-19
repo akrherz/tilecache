@@ -144,7 +144,12 @@ class Request(object):
                 uri,
             )
         elif layername.startswith("hrrr::"):
-            (prod, ftime, tstring) = (layername.split("::")[1]).split("-")
+            tokens = layername[6:].split("-")
+            if len(tokens) != 3:
+                raise MalformedRequestException(
+                    "Request needs 3 parameters after '::' delimited by '-'"
+                )
+            (prod, ftime, tstring) = tokens
             ptype = "d" if layername.find("REFD") > 0 else "p"
             if len(tstring) == 12:
                 mylayername = f"hrrr-ref{ptype}-t"
