@@ -70,6 +70,12 @@ def test_250320_hrrr(client):
     assert res.status_code == 404
 
 
+def test_bad_hrrr(client: Client):
+    """Test a HRRR request that has no backend layer defined."""
+    with pytest.raises(InvalidTMSRequest):
+        client.get("/1.0.0/hrrr::REFD-2025032000/4/4/8.png")
+
+
 def test_250326_space_in_request(client):
     """Test that a space in the request is handled correctly."""
     with pytest.raises(InvalidTMSRequest):
