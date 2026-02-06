@@ -47,8 +47,9 @@ jobs:
     - name: Build and Test
       run: |
         set -e
-        python -m pip install . --upgrade
-        python -m pytest --cov=TileCache --cov-report=xml
+        python -m pip install . --upgrade --no-deps
+        python -m pytest --cov=TileCache
+        python -m coverage xml
 
     - name: Code coverage
       if: ${{ env.PYTHON_VERSION == '3.14' }}

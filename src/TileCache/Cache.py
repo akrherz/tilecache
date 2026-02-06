@@ -3,14 +3,13 @@
 YESVALS = ["yes", "y", "t", "true"]
 
 
-class Cache(object):
+class Cache:
     """Base Cache"""
 
     def __init__(
         self,
         timeout=30.0,
         stale_interval=300.0,
-        readonly=False,
         expire=False,
         sendfile=False,
         **kwargs,
@@ -18,7 +17,6 @@ class Cache(object):
         """Constructor"""
         self.stale = float(stale_interval)
         self.timeout = float(timeout)
-        self.readonly = readonly
         self.expire = expire
         self.sendfile = sendfile and sendfile.lower() in YESVALS
         if expire is not False:
