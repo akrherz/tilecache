@@ -35,8 +35,6 @@ class Memcached(Cache):
 
     def set(self, tile, data):
         """Set the cache data"""
-        if self.readonly:
-            return data
         key = self.getKey(tile)
         self.cache.set(key, data, self.timeout)
         return data
