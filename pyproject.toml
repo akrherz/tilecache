@@ -1,6 +1,5 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-
 requires = [ "setuptools>=64", "setuptools-scm>=8" ]
 
 [project]
@@ -19,7 +18,6 @@ dynamic = [ "version" ]
 dependencies = [
   "requests",
 ]
-
 urls."homepage" = "https://github.com/akrherz/tilecache"
 
 [tool.setuptools_scm]
@@ -27,7 +25,6 @@ version_scheme = "post-release"
 
 [tool.ruff]
 target-version = "py310"
-
 line-length = 79
 lint.select = [
   "B", # bugbear
@@ -38,8 +35,8 @@ lint.select = [
   "T",
 ]
 
-[tool.pytest.ini_options]
-filterwarnings = [
+[tool.pytest]
+ini_options.filterwarnings = [
   "ignore:numpy.ndarray size changed:RuntimeWarning",
   "ignore:'cgi' is deprecated and slated for removal:DeprecationWarning",
 ]
