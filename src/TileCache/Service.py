@@ -57,6 +57,8 @@ class Service(object):
         self.cache = cache
         self.layers = layers
         self.metadata = {} if metadata is None else metadata
+        self.files = None
+        self.config = None
 
     @classmethod
     def loadFromSection(cls, config, section, module, **objargs):
