@@ -58,7 +58,8 @@ class Service(object):
         self.layers = layers
         self.metadata = {} if metadata is None else metadata
 
-    def _loadFromSection(cls, config, section, module, **objargs):
+    @classmethod
+    def loadFromSection(cls, config, section, module, **objargs):
         """Unsure"""
         stype = config.get(section, "type")
         for opt in config.options(section):
@@ -85,9 +86,8 @@ class Service(object):
             return section_object(section, **objargs)
         return section_object(**objargs)
 
-    loadFromSection = classmethod(_loadFromSection)
-
-    def _load(cls, *files):
+    @classmethod
+    def load(cls, *files):
         """unsure"""
         cache = None
         metadata = {}
@@ -124,8 +124,6 @@ class Service(object):
         service.files = files
         service.config = config
         return service
-
-    load = classmethod(_load)
 
     def generate_crossdomain_xml(self):
         """Helper method for generating the XML content for a crossdomain.xml
