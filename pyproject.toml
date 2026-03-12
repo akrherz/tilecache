@@ -18,7 +18,7 @@ dynamic = [ "version" ]
 dependencies = [
   "requests",
 ]
-urls."homepage" = "https://github.com/akrherz/tilecache"
+urls.homepage = "https://github.com/akrherz/tilecache"
 
 [tool.setuptools_scm]
 version_scheme = "post-release"

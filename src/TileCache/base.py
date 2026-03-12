@@ -3,11 +3,6 @@
 import copy
 from datetime import datetime, timedelta, timezone
 
-CANT_CALL_DIRECTLY = (
-    "idep goes_east goes_west goes goes-t mrms mrms-t hrrr-refd hrrr-refp "
-    "hrrr-refd-t hrrr-refp-t"
-).split()
-
 
 class MalformedRequestException(Exception):
     """Exception raised when a request is malformed"""
@@ -62,12 +57,6 @@ class Request(object):
 
         # GH33 remove 20 some year legacy of having -900913 in the layername
         layername = layername.replace("-900913", "")
-        # These layers can't be called directly without name overloads
-        if layername in CANT_CALL_DIRECTLY:
-            raise TileCacheLayerNotFoundException(
-                f"Layer {layername} can not be called directly, please "
-                "include name overloads."
-            )
         # Don't allow whitespace in the layername
         if " " in layername:
             raise MalformedRequestException(
@@ -76,6 +65,13 @@ class Request(object):
         layer = self.service.layers.get(layername)
         # If the layername is known, there is no logic to implement
         if layer is not None:
+            # A layer definition without a url attribute is virtual and
+            # can not be called directly.
+            if layer.url is None:
+                raise TileCacheLayerNotFoundException(
+                    f"Layer {layername} can not be called directly, it is "
+                    "virtual and needs to be called with name overloads."
+                )
             return layer
         if layername.startswith("idep"):
             (lbl, ltype, date) = layername.split("::", 3)

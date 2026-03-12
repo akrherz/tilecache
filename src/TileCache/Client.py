@@ -24,7 +24,7 @@ class WMS(object):
     defaultParams = {"version": "1.1.1", "request": "GetMap", "service": "WMS"}
     __slots__ = ("base", "params", "client", "data", "response")
 
-    def __init__(self, base, params, user=None, password=None):
+    def __init__(self, base: str, params, user=None, password=None):
         """Constructor"""
         self.base = base
         if self.base[-1] not in "?&":

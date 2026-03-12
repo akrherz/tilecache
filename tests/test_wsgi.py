@@ -22,6 +22,12 @@ def client() -> Client:
     return Client(app)
 
 
+def test_bad_ridge(client: Client):
+    """Test something in the wild."""
+    resp = client.get("/1.0.0/ridge-single/6/14/25.png")
+    assert resp.status_code == 404
+
+
 def test_non_ascii_key(client: Client):
     """Test how we handle these naughty requests."""
     with pytest.raises(InvalidTMSRequest):
