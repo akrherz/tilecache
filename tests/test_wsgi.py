@@ -28,6 +28,18 @@ def test_bad_ridge(client: Client):
     assert resp.status_code == 404
 
 
+def test_invalid_sector(client: Client):
+    """Test that we give the user an error in this situation."""
+    with pytest.raises(InvalidTMSRequest):
+        client.get("/1.0.0/ridge::KDVN-N0Q-0/11/384/821.png")
+
+
+def test_invalid_prod(client: Client):
+    """Test that we give the user an error in this situation."""
+    with pytest.raises(InvalidTMSRequest):
+        client.get("/1.0.0/ridge::DVN-NQ-0/11/384/821.png")
+
+
 def test_non_ascii_key(client: Client):
     """Test how we handle these naughty requests."""
     with pytest.raises(InvalidTMSRequest):

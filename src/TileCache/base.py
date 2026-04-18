@@ -211,6 +211,11 @@ class Request(object):
                     prod = prod.lower()
                     mylayername = "ridge-composite-single"
                 else:
+                    # Help users out here.
+                    if len(sector) != 3 or len(prod) != 3:
+                        raise MalformedRequestException(
+                            "Sector and product should be 3 characters each"
+                        )
                     mylayername = "ridge-single"
                 uri = ""
             layer = _get_layer(self.service, mylayername)
