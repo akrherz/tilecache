@@ -38,6 +38,26 @@ def _get_layer(service, layername: str):
     raise TileCacheLayerNotFoundException(msg)
 
 
+def _normalize_layername(layername: str):
+    """Ensure that the layername is well formed."""
+    # layername should be ASCII
+    try:
+        layername.encode("ascii")
+    except UnicodeEncodeError as exp:
+        raise MalformedRequestException(
+            f"Layername {layername} contains non-ascii characters"
+        ) from exp
+
+    # GH33 remove 20 some year legacy of having -900913 in the layername
+    layername = layername.replace("-900913", "")
+    # Don't allow whitespace in the layername
+    if " " in layername:
+        raise MalformedRequestException(
+            f"Layername {layername} contains whitespace"
+        )
+    return layername
+
+
 class Request(object):
     """object"""
 
@@ -47,21 +67,7 @@ class Request(object):
 
     def getLayer(self, layername: str):
         """implements some custom logic here for the provided layername"""
-        # layername should be ASCII
-        try:
-            layername.encode("ascii")
-        except UnicodeEncodeError as exp:
-            raise MalformedRequestException(
-                f"Layername {layername} contains non-ascii characters"
-            ) from exp
-
-        # GH33 remove 20 some year legacy of having -900913 in the layername
-        layername = layername.replace("-900913", "")
-        # Don't allow whitespace in the layername
-        if " " in layername:
-            raise MalformedRequestException(
-                f"Layername {layername} contains whitespace"
-            )
+        layername = _normalize_layername(layername)
         layer = self.service.layers.get(layername)
         # If the layername is known, there is no logic to implement
         if layer is not None:
