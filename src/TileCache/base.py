@@ -38,6 +38,83 @@ def _get_layer(service, layername: str):
     raise TileCacheLayerNotFoundException(msg)
 
 
+def _normalize_layername(layername: str):
+    """Ensure that the layername is well formed."""
+    # layername should be ASCII
+    try:
+        layername.encode("ascii")
+    except UnicodeEncodeError as exp:
+        raise MalformedRequestException(
+            f"Layername {layername} contains non-ascii characters"
+        ) from exp
+
+    # GH33 remove 20 some year legacy of having -900913 in the layername
+    layername = layername.replace("-900913", "")
+    # Don't allow whitespace in the layername
+    if " " in layername:
+        raise MalformedRequestException(
+            f"Layername {layername} contains whitespace"
+        )
+    return layername
+
+
+def _ridge_handler(service, layername: str):
+    """Handle Ridge requests."""
+    tokens = layername.split("::")[1].split("-")
+    if len(tokens) != 3:
+        raise MalformedRequestException(
+            "Request needs 3 parameters after '::' delimited by '-'"
+        )
+    (sector, prod, tstring) = tokens
+    if len(tstring) == 12:
+        utcnow = (datetime.now(timezone.utc) + timedelta(minutes=5)).strftime(
+            "%Y%m%d%H%M"
+        )
+        if tstring > utcnow:
+            raise TileCacheFutureException("Specified time in the future!")
+        mylayername = "ridge-t"
+        year = tstring[:4]
+        month = tstring[4:6]
+        day = tstring[6:8]
+        ts = tstring[8:12]
+        if sector in ["USCOMP", "HICOMP", "AKCOMP", "PRCOMP"]:
+            mylayername = "ridge-composite-t"
+            if prod == "N0R":
+                mylayername = "ridge-composite-t-n0r"
+            sector = sector.lower()
+            prod = prod.lower()
+            # these should always be for a minutes mod 5
+            # if not, save the users from themselves
+            if ts[-1] not in ["0", "5"]:
+                extra = "5" if ts[-1] > "5" else "0"
+                ts = f"{ts[:3]}{extra}"
+        uri = f"year={year}&month={month}&day={day}&time={ts}&"
+    else:
+        if sector in ["USCOMP", "HICOMP", "AKCOMP", "PRCOMP"]:
+            prod = prod.lower()
+            mylayername = "ridge-composite-single"
+        else:
+            # Allow a four character ID
+            if len(sector) == 4:
+                sector = sector[1:]
+            # Help users out here.
+            if len(sector) != 3 or len(prod) != 3:
+                raise MalformedRequestException(
+                    "Sector and product should be 3 characters each"
+                )
+            mylayername = "ridge-single"
+        uri = ""
+    layer = _get_layer(service, mylayername)
+    layer.name = layername
+    layer.url = "%ssector=%s&prod=%s&%s" % (
+        layer.metadata["baseurl"],
+        sector,
+        prod,
+        uri,
+    )
+    return layer
+
+
 class Request(object):
     """object"""
 
@@ -47,21 +124,7 @@ class Request(object):
 
     def getLayer(self, layername: str):
         """implements some custom logic here for the provided layername"""
-        # layername should be ASCII
-        try:
-            layername.encode("ascii")
-        except UnicodeEncodeError as exp:
-            raise MalformedRequestException(
-                f"Layername {layername} contains non-ascii characters"
-            ) from exp
-
-        # GH33 remove 20 some year legacy of having -900913 in the layername
-        layername = layername.replace("-900913", "")
-        # Don't allow whitespace in the layername
-        if " " in layername:
-            raise MalformedRequestException(
-                f"Layername {layername} contains whitespace"
-            )
+        layername = _normalize_layername(layername)
         layer = self.service.layers.get(layername)
         # If the layername is known, there is no logic to implement
         if layer is not None:
@@ -169,63 +232,10 @@ class Request(object):
             layer.name = layername
             layer.layers = mslayer
             layer.url = "%s%s" % (layer.metadata["baseurl"], uri)
-        elif layername.find("::") > 0:
-            params = layername.split("::")[1].split("-")
-            if len(params) != 3:
-                raise MalformedRequestException(
-                    "Request needs 3 parameters after '::' delimited by '-'"
-                )
-            (sector, prod, tstring) = params
-            if len(tstring) == 12:
-                utcnow = (
-                    datetime.now(timezone.utc) + timedelta(minutes=5)
-                ).strftime("%Y%m%d%H%M")
-                if tstring > utcnow:
-                    raise TileCacheFutureException(
-                        "Specified time in the future!"
-                    )
-                mylayername = "ridge-t"
-                year = tstring[:4]
-                month = tstring[4:6]
-                day = tstring[6:8]
-                ts = tstring[8:12]
-                if sector in ["USCOMP", "HICOMP", "AKCOMP", "PRCOMP"]:
-                    mylayername = "ridge-composite-t"
-                    if prod == "N0R":
-                        mylayername = "ridge-composite-t-n0r"
-                    sector = sector.lower()
-                    prod = prod.lower()
-                    # these should always be for a minutes mod 5
-                    # if not, save the users from themselves
-                    if ts[-1] not in ["0", "5"]:
-                        extra = "5" if ts[-1] > "5" else "0"
-                        ts = "%s%s" % (ts[:3], extra)
-                uri = "year=%s&month=%s&day=%s&time=%s&" % (
-                    year,
-                    month,
-                    day,
-                    ts,
-                )
-            else:
-                if sector in ["USCOMP", "HICOMP", "AKCOMP", "PRCOMP"]:
-                    prod = prod.lower()
-                    mylayername = "ridge-composite-single"
-                else:
-                    # Help users out here.
-                    if len(sector) != 3 or len(prod) != 3:
-                        raise MalformedRequestException(
-                            "Sector and product should be 3 characters each"
-                        )
-                    mylayername = "ridge-single"
-                uri = ""
-            layer = _get_layer(self.service, mylayername)
-            layer.name = layername
-            layer.url = "%ssector=%s&prod=%s&%s" % (
-                layer.metadata["baseurl"],
-                sector,
-                prod,
-                uri,
-            )
+        elif "::" in layername:
+            # Defacto what is left for this nomenclature that is not handled
+            # above.
+            layer = _ridge_handler(self.service, layername)
         if layer is None:
             raise TileCacheLayerNotFoundException(
                 f"Layer {layername} not found"
