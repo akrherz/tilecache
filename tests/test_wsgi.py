@@ -1,6 +1,7 @@
 """Run some WSGI tests via wuerkzeug."""
 
 import os
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from requests_mock import ANY
@@ -22,16 +23,36 @@ def client() -> Client:
     return Client(app)
 
 
+def test_future_ridge(client: Client):
+    """Test for an invalid request generated for a request from the future."""
+    futuredt = datetime.now(timezone.utc) + timedelta(days=1)
+    futuredtstr = futuredt.strftime("%Y%m%d%H%M")
+    resp = client.get(f"/1.0.0/ridge::KDVN-N0Q-{futuredtstr}/11/384/821.png")
+    assert resp.status_code == 503
+
+
+def test_rectifying_ridge_date(client: Client):
+    """Test that a non modulo-5 timestamp gets rectified."""
+    res = client.get("/1.0.0/ridge::USCOMP-N0R-202502232331/5/7/11.png")
+    assert res.status_code == 200
+
+
+def test_realtime_ridge_request(client: Client):
+    """Test allowing for a 0 with the composite request."""
+    res = client.get("/1.0.0/ridge::USCOMP-N0R-0/5/7/11.png")
+    assert res.status_code == 200
+
+
 def test_bad_ridge(client: Client):
     """Test something in the wild."""
     resp = client.get("/1.0.0/ridge-single/6/14/25.png")
     assert resp.status_code == 404
 
 
-def test_invalid_sector(client: Client):
-    """Test that we give the user an error in this situation."""
-    with pytest.raises(InvalidTMSRequest):
-        client.get("/1.0.0/ridge::KDVN-N0Q-0/11/384/821.png")
+def test_permitted_four_char(client: Client):
+    """Test that we allow this situation."""
+    resp = client.get("/1.0.0/ridge::KDVN-N0Q-0/11/384/821.png")
+    assert resp.status_code == 200
 
 
 def test_invalid_prod(client: Client):
